@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pak Qanoon AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Nastaliq+Urdu:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ── THEMES ─────────────────────────────── */
+:root{
+  --gold:#d4930a; --gold2:#f0b429; --gold3:#ffd166;
+  --goldbg:rgba(212,147,10,.09); --goldbrd:rgba(212,147,10,.28);
+  --green:#22c55e; --red:#ef4444; --sw:264px;
+}
+[data-theme="dark"]{
+  --bg:#0a0a0c; --bg2:#101012; --bg3:#161618;
+  --bg4:#1e1e22; --bg5:#26262a;
+  --t1:#f0ede6; --t2:#9a9690; --t3:#525050;
+  --brd:rgba(255,255,255,.06); --brd2:rgba(255,255,255,.1);
+  --ubg:#1e1e22; --ubrd:rgba(255,255,255,.1);
+  --topbg:rgba(10,10,12,.95); --sbg:#101012;
+  --inp:#161618; --shadow:rgba(0,0,0,.4);
+}
+[data-theme="light"]{
+  --bg:#f7f6f2; --bg2:#ededea; --bg3:#e4e3df;
+  --bg4:#d8d7d3; --bg5:#cac9c5;
+  --t1:#18181a; --t2:#5c5a56; --t3:#9a9894;
+  --brd:rgba(0,0,0,.07); --brd2:rgba(0,0,0,.12);
+  --ubg:#ffffff; --ubrd:rgba(0,0,0,.12);
+  --topbg:rgba(247,246,242,.95); --sbg:#ededea;
+  --inp:#ffffff; --shadow:rgba(0,0,0,.12);
+}
+
+/* ── BASE ───────────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{
+  background:var(--bg);color:var(--t1);
+  font-family:'Inter',system-ui,sans-serif;
+  display:flex;height:100vh;direction:ltr;
+  transition:background .3s,color .3s;
+}
+
+/* ── SIDEBAR ────────────────────────────── */
+#sb{
+  width:var(--sw);min-width:var(--sw);
+  background:var(--sbg);
+  border-right:1px solid var(--brd);
+  display:flex;flex-direction:column;
+  height:100vh;overflow:hidden;
+  transition:width .28s cubic-bezier(.4,0,.2,1),
+             min-width .28s cubic-bezier(.4,0,.2,1),
+             background .3s;
+  flex-shrink:0;z-index:20;position:relative;
+}
+#sb.closed{width:0;min-width:0;}
+
+.sb-head{padding:14px 12px 10px;flex-shrink:0;}
+.sb-logo{
+  display:flex;align-items:center;gap:10px;
+  padding:4px 2px 14px;
+}
+.sb-logo-ic{
+  font-size:22px;flex-shrink:0;
+  filter:drop-shadow(0 0 10px rgba(212,147,10,.5));
+}
+.sb-logo-nm{font-size:15px;font-weight:700;white-space:nowrap;color:var(--t1);}
+.sb-logo-nm span{color:var(--gold2);}
+
+.sb-new{
+  display:flex;align-items:center;gap:8px;
+  width:100%;padding:9px 12px;
+  background:var(--goldbg);border:1px solid var(--goldbrd);
+  border-radius:10px;color:var(--gold2);
+  font-size:13px;font-weight:600;cursor:pointer;
+  transition:all .16s;font-family:inherit;white-space:nowrap;
+}
+.sb-new:hover{background:rgba(212,147,10,.17);}
+
+.sb-sw{padding:10px 12px 6px;}
+.sb-si{
+  width:100%;background:var(--bg3);
+  border:1px solid var(--brd2);border-radius:8px;
+  padding:7px 11px;color:var(--t1);
+  font-size:12.5px;outline:none;font-family:inherit;
+  transition:border-color .18s;
+}
+.sb-si::placeholder{color:var(--t3);}
+.sb-si:focus{border-color:var(--goldbrd);}
+
+.sb-lbl{
+  padding:10px 14px 4px;font-size:10px;font-weight:700;
+  color:var(--t3);letter-spacing:.1em;
+  text-transform:uppercase;white-space:nowrap;
+}
+
+.sb-list{flex:1;overflow-y:auto;padding:2px 6px 6px;}
+.sb-list::-webkit-scrollbar{width:3px;}
+.sb-list::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:3px;}
+
+.ci{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 9px;border-radius:8px;
+  cursor:pointer;transition:background .14s;
+  margin-bottom:1px;
+}
+.ci:hover{background:var(--bg4);}
+.ci.active{background:var(--bg4);border:1px solid var(--brd2);}
+.ci-ic{font-size:13px;opacity:.55;flex-shrink:0;}
+.ci-tx{
+  flex:1;font-size:12.5px;color:var(--t2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ci.active .ci-tx{color:var(--t1);}
+.ci-d{
+  opacity:0;background:none;border:none;color:var(--t3);
+  cursor:pointer;font-size:12px;padding:2px 5px;
+  border-radius:4px;flex-shrink:0;transition:all .14s;
+}
+.ci:hover .ci-d{opacity:1;}
+.ci-d:hover{color:var(--red);background:rgba(239,68,68,.12);}
+
+.sb-foot{
+  padding:8px 6px 10px;
+  border-top:1px solid var(--brd);flex-shrink:0;
+}
+.sb-fb{
+  display:flex;align-items:center;gap:9px;
+  width:100%;padding:8px 12px;
+  background:none;border:none;color:var(--t2);
+  font-size:12.5px;cursor:pointer;border-radius:8px;
+  transition:all .14s;white-space:nowrap;font-family:inherit;
+}
+.sb-fb:hover{background:var(--bg4);color:var(--t1);}
+.sb-disc{
+  padding:7px 12px 2px;
+  font-size:10.5px;color:var(--t3);
+  line-height:1.55;text-align:center;
+}
+
+/* ── MAIN ───────────────────────────────── */
+#main{
+  flex:1;display:flex;flex-direction:column;
+  height:100vh;overflow:hidden;min-width:0;
+}
+
+/* Topbar */
+#topbar{
+  height:52px;border-bottom:1px solid var(--brd);
+  display:flex;align-items:center;gap:10px;
+  padding:0 14px;flex-shrink:0;
+  background:var(--topbg);backdrop-filter:blur(12px);
+  transition:background .3s;
+}
+.tb-tog{
+  width:32px;height:32px;background:var(--bg3);
+  border:1px solid var(--brd2);border-radius:7px;
+  cursor:pointer;display:flex;align-items:center;
+  justify-content:center;color:var(--t2);flex-shrink:0;
+  transition:all .16s;
+}
+.tb-tog:hover{background:var(--bg4);color:var(--t1);}
+.tb-tog svg{pointer-events:none;}
+
+.tb-title{
+  flex:1;font-size:14px;font-weight:600;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  color:var(--t1);
+}
+.tb-title .ac{color:var(--gold2);}
+
+/* Theme toggle */
+.theme-btn{
+  width:36px;height:36px;
+  background:var(--bg3);border:1px solid var(--brd2);
+  border-radius:8px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;transition:all .2s;
+}
+.theme-btn:hover{background:var(--bg4);border-color:var(--goldbrd);}
+
+.tb-mdl{
+  font-size:11px;color:var(--t3);background:var(--bg3);
+  padding:4px 10px;border-radius:6px;border:1px solid var(--brd);
+  white-space:nowrap;flex-shrink:0;
+}
+.tb-mdl b{color:var(--gold);}
+.tb-on{
+  display:flex;align-items:center;gap:5px;
+  font-size:11.5px;color:var(--t2);
+  background:var(--bg3);padding:4px 11px;
+  border-radius:20px;border:1px solid var(--brd);
+  white-space:nowrap;flex-shrink:0;
+}
+.dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--green);box-shadow:0 0 6px var(--green);
+  animation:bl 2.5s infinite;
+}
+@keyframes bl{0%,100%{opacity:1;}50%{opacity:.35;}}
+
+/* ── WELCOME ────────────────────────────── */
+#wlc{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:30px 20px 20px;overflow-y:auto;
+  position:relative;
+}
+#wlc::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 55% 35% at 20% 25%,rgba(212,147,10,.05) 0%,transparent 60%),
+    radial-gradient(ellipse 45% 30% at 80% 75%,rgba(212,147,10,.04) 0%,transparent 60%);
+}
+.wic{
+  font-size:56px;margin-bottom:18px;
+  filter:drop-shadow(0 0 18px rgba(212,147,10,.38));
+  animation:bob 3.5s ease-in-out infinite;
+  position:relative;z-index:1;
+}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.wtit{
+  font-size:28px;font-weight:700;text-align:center;
+  margin-bottom:10px;position:relative;z-index:1;
+  color:var(--t1);
+}
+.wtit .g{color:var(--gold2);}
+.wsub{
+  font-size:14px;color:var(--t2);text-align:center;
+  max-width:470px;line-height:1.72;
+  margin-bottom:36px;position:relative;z-index:1;
+}
+
+.qgrid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:10px;max-width:720px;width:100%;
+  margin-bottom:22px;position:relative;z-index:1;
+}
+.qc{
+  background:var(--bg3);border:1px solid var(--brd2);
+  border-radius:12px;padding:14px 15px;cursor:pointer;
+  display:flex;align-items:flex-start;gap:10px;
+  text-align:left;transition:all .2s;
+}
+.qc:hover{
+  background:var(--bg4);border-color:var(--goldbrd);
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px var(--shadow,rgba(0,0,0,.3));
+}
+.qc-ic{font-size:19px;flex-shrink:0;margin-top:1px;}
+.qc-tx{font-size:13px;color:var(--t1);line-height:1.45;}
+
+.lpills{
+  display:flex;flex-wrap:wrap;gap:7px;
+  justify-content:center;max-width:720px;
+  width:100%;position:relative;z-index:1;
+}
+.lp{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 13px;border:1px solid var(--brd2);
+  border-radius:20px;font-size:11.5px;
+  color:var(--t2);background:var(--bg3);
+  cursor:pointer;transition:all .16s;white-space:nowrap;
+}
+.lp:hover{border-color:var(--goldbrd);color:var(--gold2);}
+
+/* ── CHAT AREA ──────────────────────────── */
+#cw{display:none;flex:1;flex-direction:column;overflow:hidden;}
+#msgs{
+  flex:1;overflow-y:auto;
+  padding:24px 0 8px;scroll-behavior:smooth;
+}
+#msgs::-webkit-scrollbar{width:4px;}
+#msgs::-webkit-scrollbar-thumb{background:var(--bg5);border-radius:4px;}
+
+/* Message rows — professional LTR like ChatGPT */
+.mr{
+  max-width:780px;margin:0 auto 20px;
+  padding:0 20px;animation:fu .22s ease;
+}
+@keyframes fu{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* USER — right aligned */
+.mr.u{display:flex;justify-content:flex-end;}
+.ub{
+  max-width:68%;background:var(--ubg);
+  border:1px solid var(--ubrd);
+  border-radius:18px 4px 18px 18px;
+  padding:12px 15px;font-size:14px;
+  line-height:1.65;color:var(--t1);
+  text-align:left;word-break:break-word;
+}
+.ub.hi{padding-top:10px;}
+.uim{
+  display:block;max-width:220px;max-height:170px;
+  border-radius:9px;object-fit:cover;margin-bottom:9px;
+}
+
+/* AI — left aligned */
+.mr.a{display:flex;align-items:flex-start;gap:12px;}
+.aav{
+  width:32px;height:32px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--bg4),var(--bg5));
+  border:1px solid var(--goldbrd);border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;margin-top:2px;
+}
+.acol{flex:1;min-width:0;}
+.anm{
+  font-size:10.5px;font-weight:700;color:var(--gold);
+  letter-spacing:.07em;margin-bottom:7px;text-transform:uppercase;
+}
+.abody{
+  font-size:14px;line-height:1.75;
+  color:var(--t1);text-align:left;
+  word-break:break-word;
+}
+.abody p{margin-bottom:9px;}
+.abody p:last-child{margin-bottom:0;}
+.abody strong{color:var(--gold2);font-weight:600;}
+.abody em{color:var(--t2);}
+.abody ul,.abody ol{padding-left:20px;margin:8px 0;}
+.abody li{margin-bottom:4px;}
+.abody code{
+  font-family:monospace;background:var(--bg4);
+  padding:2px 5px;border-radius:4px;
+  font-size:12.5px;color:var(--gold2);
+}
+/* Urdu text right-aligned */
+.abody .ublk{
+  font-family:'Noto Nastaliq Urdu',serif;
+  direction:rtl;text-align:right;
+  line-height:2.3;font-size:15px;
+  display:block;margin-bottom:9px;
+}
+.lr{
+  display:inline;color:var(--gold2);font-weight:600;
+  background:rgba(212,147,10,.12);
+  padding:1px 5px;border-radius:4px;
+}
+.disc{
+  margin-top:12px;padding:9px 13px;
+  background:rgba(212,147,10,.06);
+  border:1px solid rgba(212,147,10,.18);
+  border-radius:8px;font-size:12px;color:var(--t2);
+}
+
+/* Typing dots */
+.tdots{display:flex;gap:5px;align-items:center;padding:4px 0;}
+.tdots span{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--gold2);opacity:.4;
+  animation:td 1.3s infinite;
+}
+.tdots span:nth-child(2){animation-delay:.15s;}
+.tdots span:nth-child(3){animation-delay:.3s;}
+@keyframes td{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-5px);opacity:1;}}
+
+/* AI action buttons */
+.aacts{display:flex;gap:5px;margin-top:9px;flex-wrap:wrap;}
+.aact{
+  display:flex;align-items:center;gap:4px;
+  padding:4px 9px;background:var(--bg3);
+  border:1px solid var(--brd);border-radius:6px;
+  font-size:11px;color:var(--t2);
+  cursor:pointer;transition:all .14s;font-family:inherit;
+}
+.aact:hover{background:var(--bg4);color:var(--t1);}
+
+/* ── INPUT ZONE ─────────────────────────── */
+#iz{
+  flex-shrink:0;padding:8px 20px 14px;
+  max-width:820px;width:100%;
+  margin:0 auto;align-self:center;
+  background:linear-gradient(to top,var(--bg) 60%,transparent);
+  transition:background .3s;
+}
+
+#istrip{display:none;gap:7px;flex-wrap:wrap;margin-bottom:9px;}
+.ipw{
+  position:relative;width:65px;height:65px;
+  border-radius:8px;overflow:hidden;
+  border:1px solid var(--brd2);
+}
+.ipw img{width:100%;height:100%;object-fit:cover;}
+.iprm{
+  position:absolute;top:3px;right:3px;
+  width:17px;height:17px;
+  background:rgba(0,0,0,.72);border:none;
+  border-radius:50%;color:#fff;font-size:10px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+
+.ibox{
+  background:var(--inp);border:1px solid var(--brd2);
+  border-radius:14px;overflow:hidden;
+  transition:border-color .18s,box-shadow .18s,background .3s;
+}
+.ibox:focus-within{
+  border-color:var(--goldbrd);
+  box-shadow:0 0 0 3px rgba(212,147,10,.07);
+}
+.irow{
+  display:flex;align-items:flex-end;
+  gap:4px;padding:10px 10px 10px 14px;
+}
+#uin{
+  flex:1;background:transparent;border:none;outline:none;
+  color:var(--t1);font-size:14px;resize:none;
+  min-height:24px;max-height:130px;
+  font-family:inherit;line-height:1.55;padding:2px 0;
+}
+#uin::placeholder{color:var(--t3);}
+.ib{
+  width:34px;height:34px;background:none;border:none;
+  cursor:pointer;display:flex;align-items:center;
+  justify-content:center;border-radius:8px;
+  color:var(--t2);flex-shrink:0;transition:all .14s;
+}
+.ib:hover{background:var(--bg5);color:var(--t1);}
+.ib.rec{color:var(--red)!important;}
+#snd{
+  width:34px;height:34px;background:var(--gold);
+  border:none;border-radius:9px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  color:#000;font-size:15px;flex-shrink:0;transition:all .16s;
+}
+#snd:hover{background:var(--gold2);transform:scale(1.06);}
+#snd:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+
+.itb{
+  display:flex;align-items:center;gap:2px;
+  padding:5px 10px 8px;
+  border-top:1px solid var(--brd);flex-wrap:wrap;
+}
+.itbb{
+  display:flex;align-items:center;gap:5px;
+  padding:4px 10px;background:none;border:none;
+  color:var(--t2);font-size:12px;cursor:pointer;
+  border-radius:6px;transition:all .14s;
+  font-family:inherit;white-space:nowrap;
+}
+.itbb:hover{background:var(--bg5);color:var(--t1);}
+
+.ihint{
+  text-align:center;font-size:10px;
+  color:var(--t3);margin-top:7px;
+}
+
+#fi{display:none;}
+
+/* ── ERROR TOAST ───────────────────────── */
+#toast{
+  position:fixed;bottom:90px;left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:rgba(239,68,68,.95);
+  color:#fff;padding:10px 20px;
+  border-radius:10px;font-size:13px;
+  opacity:0;transition:all .3s;z-index:999;
+  pointer-events:none;white-space:nowrap;
+  max-width:90vw;text-align:center;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── VOICE MODAL ────────────────────────── */
+#vm{
+  display:none;position:fixed;inset:0;z-index:999;
+  background:rgba(0,0,0,.8);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;
+  flex-direction:column;gap:18px;
+}
+#vm.on{display:flex;}
+.vorb{
+  width:100px;height:100px;border-radius:50%;
+  background:radial-gradient(circle,rgba(212,147,10,.28),rgba(212,147,10,.04));
+  border:2px solid var(--goldbrd);
+  display:flex;align-items:center;justify-content:center;
+  font-size:38px;animation:vp 1.3s ease-in-out infinite;position:relative;
+}
+.vorb::before{
+  content:'';position:absolute;inset:-14px;
+  border-radius:50%;border:2px solid rgba(212,147,10,.14);
+  animation:vr 1.3s ease-in-out infinite;
+}
+@keyframes vp{0%,100%{transform:scale(1);}50%{transform:scale(1.07);}}
+@keyframes vr{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.25);opacity:0;}}
+.vlb{color:#f0ede6;font-size:15px;font-weight:500;}
+.vtx{max-width:380px;text-align:center;font-size:13px;color:#9a9690;line-height:1.6;min-height:36px;}
+.vst{
+  padding:10px 26px;background:rgba(239,68,68,.14);
+  border:1px solid rgba(239,68,68,.3);border-radius:9px;
+  color:var(--red);font-size:14px;font-weight:600;
+  cursor:pointer;transition:all .16s;font-family:inherit;
+}
+.vst:hover{background:rgba(239,68,68,.25);}
+
+/* Mobile overlay */
+#mov{display:none;position:fixed;inset:0;z-index:15;background:rgba(0,0,0,.5);}
+
+@media(max-width:768px){
+  #sb{
+    position:fixed;top:0;left:0;height:100vh;
+    transform:translateX(-100%);
+    transition:transform .28s ease;
+    width:var(--sw)!important;min-width:var(--sw)!important;
+  }
+  #sb.mop{transform:translateX(0);}
+  #mov.sh{display:block;}
+  .qgrid{grid-template-columns:repeat(2,1fr);}
+  .wtit{font-size:22px;}
+  .mr{padding:0 14px;}
+  #iz{padding:8px 12px 12px;}
+  .tb-mdl{display:none;}
+}
+@media(max-width:460px){
+  .qgrid{grid-template-columns:1fr;}
+  .wtit{font-size:19px;}
+}
+</style>
+</head>
+<body>
+
+<div id="mov" onclick="closeMob()"></div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- Voice Modal -->
+<div id="vm">
+  <div class="vorb">🎤</div>
+  <div class="vlb" id="vlb">Listening...</div>
+  <div class="vtx" id="vtx">Speak your question</div>
+  <button class="vst" onclick="stopVoice()">⏹ Stop</button>
+</div>
+
+<input type="file" id="fi" accept="image/*" multiple onchange="handleFiles(this)">
+
+<!-- ═══════ SIDEBAR ═══════ -->
+<div id="sb">
+  <div class="sb-head">
+    <div class="sb-logo">
+      <span class="sb-logo-ic">⚖️</span>
+      <div class="sb-logo-nm">AI <span>پاک قانون</span></div>
+    </div>
+    <button class="sb-new" onclick="newChat()">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      New Chat
+    </button>
+  </div>
+
+  <div class="sb-sw">
+    <input class="sb-si" type="text" placeholder="🔍  Search chats..." oninput="srch(this.value)">
+  </div>
+
+  <div class="sb-lbl" id="sblbl">Recent Chats</div>
+  <div class="sb-list" id="sbl"></div>
+
+  <div class="sb-foot">
+    <button class="sb-fb" onclick="clearAll()">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>
+      </svg>
+      Clear all chats
+    </button>
+    <div class="sb-disc">⚠️ General guidance only.<br>Consult a lawyer for your specific case.</div>
+  </div>
+</div>
+
+<!-- ═══════ MAIN ═══════ -->
+<div id="main">
+
+  <!-- Topbar -->
+  <div id="topbar">
+    <button class="tb-tog" onclick="togSB()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M3 12h18M3 6h18M3 18h18"/>
+      </svg>
+    </button>
+
+    <div class="tb-title" id="tbt">
+      Pak Qanoon <span class="ac">AI</span> — Pakistani Law Assistant
+    </div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle dark/light mode">🌙</button>
+
+    <div class="tb-mdl"><b>Hamdan Saddique</b> Founder of Pak Qanoon AI</div>
+    <div class="tb-on"><div class="dot"></div>Online</div>
+  </div>
+
+  <!-- Welcome -->
+  <div id="wlc">
+    <div class="wic">⚖️</div>
+    <h1 class="wtit"> میں خوش آمدید<span class="g">AI</span> پاک قانون</h1>
+    <p class="wsub">
+      Ask in <strong>English</strong>, <strong>Roman Urdu</strong>, or <strong>اردو</strong> — I reply in the same language.<br>
+      Expert guidance on all Pakistani laws.
+    </p>
+
+    <div class="qgrid">
+      <div class="qc" onclick="qs('How to get bail in Pakistan? Explain the process and relevant CrPC sections.')">
+        <span class="qc-ic">⚖️</span>
+        <span class="qc-tx">How to get bail (Zamanat)?</span>
+      </div>
+      <div class="qc" onclick="qs('FIR kaise darj karwate hain? Agar police FIR likhne se inkar kare to kya karein?')">
+        <span class="qc-ic">📋</span>
+        <span class="qc-tx">FIR darj karwana</span>
+      </div>
+      <div class="qc" onclick="qs('Property dispute law in Pakistan — what are my rights and legal remedies?')">
+        <span class="qc-ic">🏠</span>
+        <span class="qc-tx">Property disputes</span>
+      </div>
+      <div class="qc" onclick="qs('Talaq aur khula ka qanooni tareeqa kya hai? Muslim Family Law kya kehta hai?')">
+        <span class="qc-ic">💍</span>
+        <span class="qc-tx">Talaq ke masail</span>
+      </div>
+      <div class="qc" onclick="qs('Police ne bina warrant giraftar kiya — kya yeh qanooni hai? Mere kya haqooq hain?')">
+        <span class="qc-ic">👮</span>
+        <span class="qc-tx">Najaiz girftari</span>
+      </div>
+      <div class="qc" onclick="qs('Inheritance law in Pakistan — how is property divided under Islamic and civil law?')">
+        <span class="qc-ic">📜</span>
+        <span class="qc-tx">Inheritance / Wiraasat</span>
+      </div>
+    </div>
+
+    <div class="lpills">
+      <div class="lp" onclick="qs('Explain Pakistan Penal Code PPC — overview of main sections and offenses')">📘 PPC — 511 Sections</div>
+      <div class="lp" onclick="qs('Explain Code of Criminal Procedure CrPC Pakistan — key provisions')">📗 CrPC — 565 Sections</div>
+      <div class="lp" onclick="qs('Explain Code of Civil Procedure CPC Pakistan')">📙 CPC — 158 Sections</div>
+      <div class="lp" onclick="qs('Explain Qanun-e-Shahadat evidence law Pakistan')">📒 QS — 166 Articles</div>
+      <div class="lp" onclick="qs('Fundamental rights under Constitution of Pakistan 1973 — Article 8 to 28')">📔 Constitution 1973</div>
+      <div class="lp" onclick="qs('PECA 2016 cyber crime law Pakistan — offenses and punishments')">💻 PECA 2016</div>
+      <div class="lp" onclick="qs('Labour rights and workers protection laws Pakistan')">👷 Labour Laws</div>
+    </div>
+  </div>
+
+  <!-- Chat -->
+  <div id="cw">
+    <div id="msgs"></div>
+  </div>
+
+  <!-- Input -->
+  <div id="iz">
+    <div id="istrip"></div>
+    <div class="ibox">
+      <div class="irow">
+        <textarea id="uin" rows="1"
+          placeholder="Type in English, Roman Urdu, or اردو میں لکھیں..."
+          oninput="autoh(this)"
+          onkeydown="hkey(event)"></textarea>
+        <button class="ib" id="vbtn" onclick="startVoice()" title="Voice input">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="9" y="2" width="6" height="12" rx="3"/>
+            <path d="M5 10a7 7 0 0014 0M12 19v3M8 22h8"/>
+          </svg>
+        </button>
+        <button class="ib" onclick="document.getElementById('fi').click()" title="Upload image">
+          <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="18" height="18" rx="3"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <path d="M21 15l-5-5L5 21"/>
+          </svg>
+        </button>
+        <button id="snd" onclick="send()" title="Send">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="itb">
+        <button class="itbb" onclick="qs('Bail process in Pakistan?')">⚖️ Bail</button>
+        <button class="itbb" onclick="qs('FIR kaise likhwate hain?')">📋 FIR</button>
+        <button class="itbb" onclick="qs('Property dispute law Pakistan')">🏠 Property</button>
+        <button class="itbb" onclick="qs('Talaq aur khula ka tareeqa?')">💍 Talaq</button>
+        <button class="itbb" onclick="qs('Wiraasat ka qanoon Pakistan mein?')">📜 Wiraasat</button>
+        <button class="itbb" onclick="qs('Cyber crime PECA 2016 Pakistan?')">💻 Cyber</button>
+      </div>
+    </div>
+    <div class="ihint">Enter = Send &nbsp;·&nbsp; Shift+Enter = New line &nbsp;·&nbsp; Pak Qanoon AI — General guidance only</div>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+// ═══════════════════════════════════════════
+// CONFIG  — Groq API
+// ═══════════════════════════════════════════
+const GROQ_API = "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_KEY = "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";
+const GROQ_MDL = "llama-3.3-70b-versatile";
+
+const SYS = `You are "Pak Qanoon AI" — a highly knowledgeable Pakistani law assistant.
+
+LAWS YOU COVER:
+• Constitution of Pakistan 1973 (280 Articles) — Fundamental Rights, State structure
+• Pakistan Penal Code 1860 (PPC) — 511 Sections
+• Code of Criminal Procedure 1898 (CrPC) — 565 Sections (arrest, bail, trial)
+• Code of Civil Procedure 1908 (CPC) — 158 Sections
+• Qanun-e-Shahadat Order 1984 (QS) — 166 Articles (evidence law)
+• Muslim Family Laws Ordinance 1961 — marriage, divorce, maintenance
+• Dissolution of Muslim Marriages Act 1939 — khula
+• Transfer of Property Act 1882
+• Contract Act 1872
+• Land Acquisition Act 1894
+• Factories Act 1934 & Labour Laws (EOBI, ESSI)
+• Prevention of Electronic Crimes Act 2016 (PECA)
+• Anti-Terrorism Act 1997
+• NAB Ordinance 1999
+• Control of Narcotic Substances Act 1997
+• Family Courts Act 1964
+• Succession Act 1925 & Islamic Mirath law
+
+LANGUAGE RULE — CRITICAL:
+- User writes in ENGLISH only → reply in ENGLISH
+- User writes in URDU SCRIPT (Arabic letters) → reply in URDU SCRIPT  
+- User writes in ROMAN URDU (Urdu words in Latin: kaise, kya, hai, mein, batao, karein, qanoon, wakeel, giraftari, zamanat, talaq, wiraasat etc.) → reply in URDU SCRIPT (نستعلیق)
+- Mixed: use dominant language
+
+RESPONSE FORMAT:
+1. Direct answer first
+2. Cite specific provisions: e.g. "PPC Section 302", "CrPC Section 154", "Article 10-A"
+3. Step-by-step procedure where applicable
+4. Practical advice
+5. For serious matters: recommend consulting a qualified lawyer (wakeel)
+Use bullet points and numbered lists. Keep language simple for non-lawyers.`;
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let chats = JSON.parse(localStorage.getItem('pq4') || '[]');
+let cid   = null;
+let busy  = false;
+let pimgs = [];
+let rec   = null;
+let theme = localStorage.getItem('pq4_theme') || 'dark';
+
+// ═══════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════
+function applyTheme(t) {
+  theme = t;
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('themeBtn').textContent = t === 'dark' ? '🌙' : '☀️';
+  localStorage.setItem('pq4_theme', t);
+}
+function toggleTheme() {
+  applyTheme(theme === 'dark' ? 'light' : 'dark');
+}
+// Apply saved theme immediately
+applyTheme(theme);
+
+// ═══════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════
+const sv  = () => localStorage.setItem('pq4', JSON.stringify(chats));
+const gc  = id => chats.find(c => c.id === id);
+const esc = s  => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function mkChat(title) {
+  const id = 'c' + Date.now();
+  const t  = title.length > 44 ? title.slice(0,44)+'…' : title;
+  chats.unshift({ id, title:t, msgs:[], ts:Date.now() });
+  sv(); rlist(); return gc(id);
+}
+function delChat(id, e) {
+  e && e.stopPropagation();
+  chats = chats.filter(c => c.id !== id); sv();
+  if (cid === id) { cid=null; showWlc(); }
+  rlist();
+}
+function clearAll() {
+  if (!confirm('Delete all chats?')) return;
+  chats=[]; sv(); cid=null; showWlc(); rlist();
+}
+function loadChat(id) {
+  const ch = gc(id); if(!ch) return;
+  cid = id;
+  document.getElementById('tbt').textContent = ch.title;
+  showChat();
+  const el = document.getElementById('msgs');
+  el.innerHTML = '';
+  ch.msgs.forEach(m => rMsg(m.role, m.text, m.imgs||[], false));
+  el.scrollTop = el.scrollHeight;
+  rlist();
+  if (window.innerWidth<=768) closeMob();
+}
+function rlist(f='') {
+  const el = document.getElementById('sbl');
+  el.innerHTML = '';
+  const list = chats.filter(c => !f || c.title.toLowerCase().includes(f.toLowerCase()));
+  if (!list.length) {
+    el.innerHTML='<div style="padding:18px 14px;font-size:12px;color:var(--t3);text-align:center;">No chats yet.<br>Start a new conversation!</div>';
+    return;
+  }
+  list.forEach(ch => {
+    const d = document.createElement('div');
+    d.className = 'ci'+(ch.id===cid?' active':'');
+    d.innerHTML = `<span class="ci-ic">💬</span><span class="ci-tx">${esc(ch.title)}</span><button class="ci-d" onclick="delChat('${ch.id}',event)">✕</button>`;
+    d.addEventListener('click', ()=>loadChat(ch.id));
+    el.appendChild(d);
+  });
+}
+function srch(v){ rlist(v); }
+
+// ═══════════════════════════════════════════
+// UI STATES
+// ═══════════════════════════════════════════
+function showWlc() {
+  document.getElementById('wlc').style.display='flex';
+  document.getElementById('cw').style.display='none';
+  document.getElementById('tbt').innerHTML='Pak Qanoon <span class="ac">AI</span> — Pakistani Law Assistant';
+}
+function showChat() {
+  document.getElementById('wlc').style.display='none';
+  const cw=document.getElementById('cw');
+  cw.style.display='flex'; cw.style.flexDirection='column';
+}
+function newChat() {
+  cid=null; pimgs=[];
+  document.getElementById('msgs').innerHTML='';
+  rfStrip(); showWlc(); rlist();
+  document.getElementById('uin').focus();
+}
+function togSB() {
+  const sb=document.getElementById('sb');
+  const ov=document.getElementById('mov');
+  if (window.innerWidth<=768) {
+    sb.classList.toggle('mop');
+    ov.classList.toggle('sh', sb.classList.contains('mop'));
+  } else {
+    sb.classList.toggle('closed');
+  }
+}
+function closeMob() {
+  document.getElementById('sb').classList.remove('mop');
+  document.getElementById('mov').classList.remove('sh');
+}
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+function showToast(msg, dur=4000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), dur);
+}
+
+// ═══════════════════════════════════════════
+// LANGUAGE DETECTION
+// ═══════════════════════════════════════════
+function langOf(txt) {
+  // Urdu script characters
+  if (/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]/.test(txt)) return 'urdu';
+  // Roman Urdu words
+  const ru = /\b(hai|kya|mein|se|ko|ka|ki|ke|aur|ya|kaise|kyun|kab|kahan|karo|karein|batao|milti|milta|hota|hoti|chahiye|mujhe|tumhe|humein|yeh|woh|najaiz|giraftari|zamanat|qanoon|shadi|talaq|wiraasat|jaidad|darj|wakeel|adalat|gawah|saza|bail|warrant|khula|mehr|zamin|dawa|arzi|baar|theek|acha|nahi|haan|agar|phir|lekin|toh|sirf|bohot|zyada|thoda|saath|pehle|baad|abhi|jab|jaise|matlab|samajh|pooch|bata|likho|parho|kuch|sab|log|din|raat|waqt|paise|ghar|kaam|aadmi|aurat|bacha|bhai|behen|abu|ammi|judge|court|appeal|case|complaint|section|dhara|qaid|saza|jurm|mulzim|victim|police|thana|faisla|hukm|arz|darkhwast)\b/i;
+  if (ru.test(txt)) return 'roman-urdu';
+  return 'english';
+}
+
+// ═══════════════════════════════════════════
+// FORMAT AI RESPONSE
+// ═══════════════════════════════════════════
+function fmtAI(txt) {
+  // Detect if primarily Urdu
+  const urduChars = (txt.match(/[\u0600-\u06FF]/g)||[]).length;
+  const isUrdu = urduChars > txt.length * 0.15;
+
+  // Bold, italic
+  txt = txt.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  txt = txt.replace(/\*(.*?)\*/g,'<em>$1</em>');
+  txt = txt.replace(/`([^`]+)`/g,'<code>$1</code>');
+  // Law references — highlight them
+  txt = txt.replace(/\b(PPC|CrPC|CPC|PECA|NAB|QSO|Constitution|Article|Section|Dhara|Order|Ordinance|دفعہ|آرٹیکل)\s+([\d]+[\w-]*)/g,
+    '<span class="lr">$1 $2</span>');
+  // Numbered lists
+  txt = txt.replace(/^(\d+)\.\s+(.+)$/gm,'<li><strong>$1.</strong> $2</li>');
+  // Bullet lists
+  txt = txt.replace(/^[-•]\s+(.+)$/gm,'<li>$1</li>');
+  // Wrap li groups in ul
+  txt = txt.replace(/((?:<li>.*?<\/li>\n?)+)/gs,'<ul>$1</ul>');
+
+  // Split into paragraphs
+  const parts = txt.split(/\n{2,}/).map(p => {
+    p = p.trim(); if(!p) return '';
+    if(p.startsWith('<ul>')||p.startsWith('<ol>')) return p;
+    // Check if this paragraph is Urdu
+    const pUrdu = (p.match(/[\u0600-\u06FF]/g)||[]).length > p.length*0.1;
+    const inner = p.replace(/\n/g,'<br>');
+    return pUrdu
+      ? `<p class="ublk">${inner}</p>`
+      : `<p>${inner}</p>`;
+  }).join('');
+
+  const disc = /wakeel|lawyer|advocate|وکیل|attorney|consult/i.test(txt)
+    ? `<div class="disc">⚠️ This is general legal information. Please consult a qualified lawyer (wakeel / وکیل) for your specific situation.</div>` : '';
+
+  return parts + disc;
+}
+
+// ═══════════════════════════════════════════
+// RENDER MESSAGES
+// ═══════════════════════════════════════════
+function rMsg(role, text, imgUrls, anim=true) {
+  const w = document.createElement('div');
+  w.className = 'mr '+(role==='user'?'u':'a');
+  if(!anim) w.style.animation='none';
+
+  if (role==='user') {
+    let ih='';
+    if(imgUrls&&imgUrls.length) ih=imgUrls.map(u=>`<img class="uim" src="${u}" alt="">`).join('');
+    w.innerHTML=`<div class="ub${imgUrls&&imgUrls.length?' hi':''}">${ih}${esc(text)}</div>`;
+  } else {
+    // encode text for data attr
+    let b64='';
+    try{ b64=btoa(unescape(encodeURIComponent(text))); }catch(e){ b64=btoa(text); }
+    w.innerHTML=`
+      <div class="aav">⚖️</div>
+      <div class="acol">
+        <div class="anm">Pak Qanoon AI</div>
+        <div class="abody">${fmtAI(text)}</div>
+        <div class="aacts">
+          <button class="aact" onclick="cpMsg(this,'${b64}')">
+            <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copy
+          </button>
+          <button class="aact" onclick="spk('${b64}')">
+            <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 010 7.07"/></svg>
+            Read Aloud
+          </button>
+        </div>
+      </div>`;
+  }
+  const el=document.getElementById('msgs');
+  el.appendChild(w); el.scrollTop=el.scrollHeight;
+}
+
+function showTy() {
+  const el=document.getElementById('msgs');
+  const w=document.createElement('div');
+  w.className='mr a'; w.id='ty';
+  w.innerHTML=`<div class="aav">⚖️</div>
+    <div class="acol">
+      <div class="anm">Pak Qanoon AI</div>
+      <div class="abody"><div class="tdots"><span></span><span></span><span></span></div></div>
+    </div>`;
+  el.appendChild(w); el.scrollTop=el.scrollHeight;
+}
+function rmTy(){ const e=document.getElementById('ty'); if(e) e.remove(); }
+
+// ═══════════════════════════════════════════
+// SEND MESSAGE — Groq API
+// ═══════════════════════════════════════════
+function autoh(el){ el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,130)+'px'; }
+function hkey(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send(); }}
+function qs(t){ document.getElementById('uin').value=t; send(); }
+
+async function send() {
+  if (busy) return;
+  const inp = document.getElementById('uin');
+  const txt = inp.value.trim();
+  if (!txt && pimgs.length===0) return;
+
+  const msg  = txt||'(Image attached for legal analysis)';
+  const iurl = pimgs.map(i=>i.url);
+  const lang = langOf(msg);
+
+  inp.value=''; inp.style.height='auto';
+  pimgs=[]; rfStrip();
+
+  // Create or get chat
+  if (!cid) {
+    const ch = mkChat(msg);
+    cid = ch.id;
+    document.getElementById('tbt').textContent = ch.title;
+    showChat();
+  }
+  const ch = gc(cid);
+  ch.msgs.push({ role:'user', text:msg, imgs:iurl }); sv();
+  rMsg('user', msg, iurl);
+
+  busy=true;
+  document.getElementById('snd').disabled=true;
+  showTy();
+
+  // Language instruction appended to last user message
+  const langNote = lang==='english'
+    ? '\n\n[INSTRUCTION: The user is writing in English. Your entire reply must be in English only.]'
+    : '\n\n[INSTRUCTION: The user is writing in Urdu or Roman Urdu. Your entire reply must be in Urdu script (نستعلیق) only. Do not use English sentences.]';
+
+  try {
+    // Build messages for API (keep last 14 for context window)
+    const hist = ch.msgs.slice(-14);
+    const api  = [{ role:'system', content:SYS }];
+
+    hist.forEach((m, i) => {
+      const isLast = i===hist.length-1;
+      if (m.role==='user') {
+        api.push({ role:'user', content: isLast ? m.text+langNote : m.text });
+      } else {
+        api.push({ role:'assistant', content:m.text });
+      }
+    });
+
+    const res = await fetch(GROQ_API, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer '+GROQ_KEY
+      },
+      body: JSON.stringify({
+        model: GROQ_MDL,
+        messages: api,
+        temperature: 0.65,
+        max_tokens: 2000,
+        stream: false
+      })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(()=>({}));
+      const errMsg  = errData?.error?.message || `HTTP ${res.status}`;
+      throw new Error(errMsg);
+    }
+
+    const data  = await res.json();
+    const reply = data?.choices?.[0]?.message?.content;
+    if (!reply) throw new Error('Empty response from API');
+
+    ch.msgs.push({ role:'ai', text:reply, imgs:[] }); sv();
+    rmTy();
+    rMsg('ai', reply);
+
+  } catch(err) {
+    rmTy();
+    ch.msgs.pop(); sv();
+
+    console.error('Groq API Error:', err);
+
+    // User-friendly error messages
+    let em='', toast='';
+    if (!navigator.onLine) {
+      em='⚠️ No internet connection. Please check your network and try again.';
+      toast='No internet connection!';
+    } else if (err.message.includes('429') || err.message.toLowerCase().includes('rate')) {
+      em='⚠️ Rate limit reached. Please wait 10-15 seconds and try again.';
+      toast='Rate limit — please wait a moment.';
+    } else if (err.message.includes('401') || err.message.toLowerCase().includes('auth')) {
+      em='⚠️ API authentication error. Please check the API key.';
+      toast='API key error.';
+    } else if (err.message.toLowerCase().includes('failed to fetch') || err.message.toLowerCase().includes('networkerror')) {
+      em='⚠️ Network error. This can happen when opening the file directly. Try: right-click → Open with → Chrome, or use a local server.';
+      toast='Network error — see message for fix.';
+    } else {
+      em=`⚠️ Error: ${err.message}`;
+      toast=err.message;
+    }
+
+    showToast('❌ '+toast);
+    rMsg('ai', em);
+  }
+
+  busy=false;
+  document.getElementById('snd').disabled=false;
+  document.getElementById('uin').focus();
+}
+
+// ═══════════════════════════════════════════
+// IMAGES
+// ═══════════════════════════════════════════
+function handleFiles(inp) {
+  Array.from(inp.files).forEach(f=>{
+    if(!f.type.startsWith('image/')) return;
+    const r=new FileReader();
+    r.onload=e=>{ pimgs.push({url:e.target.result}); rfStrip(); };
+    r.readAsDataURL(f);
+  });
+  inp.value='';
+}
+function rmImg(i){ pimgs.splice(i,1); rfStrip(); }
+function rfStrip(){
+  const el=document.getElementById('istrip');
+  if(!pimgs.length){ el.style.display='none'; el.innerHTML=''; return; }
+  el.style.display='flex';
+  el.innerHTML=pimgs.map((p,i)=>`
+    <div class="ipw">
+      <img src="${p.url}" alt="">
+      <button class="iprm" onclick="rmImg(${i})">✕</button>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════
+// VOICE INPUT
+// ═══════════════════════════════════════════
+function startVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){
+    showToast('❌ Voice not supported. Please use Google Chrome.');
+    return;
+  }
+  rec=new SR();
+  rec.continuous=false; rec.interimResults=true; rec.lang='ur-PK';
+
+  document.getElementById('vm').classList.add('on');
+  document.getElementById('vlb').textContent='Listening... بول رہے ہیں';
+  document.getElementById('vtx').textContent='';
+  document.getElementById('vbtn').classList.add('rec');
+
+  let fin='';
+  rec.onresult=e=>{
+    let tmp='';
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      if(e.results[i].isFinal) fin+=e.results[i][0].transcript;
+      else tmp=e.results[i][0].transcript;
+    }
+    document.getElementById('vtx').textContent=fin||tmp;
+  };
+  rec.onerror=()=>{
+    try{ rec.lang='en-US'; rec.start(); }catch(e){}
+  };
+  rec.onend=()=>{
+    document.getElementById('vlb').textContent='✓ Done!';
+    setTimeout(()=>{
+      document.getElementById('vm').classList.remove('on');
+      document.getElementById('vbtn').classList.remove('rec');
+      if(fin.trim()){
+        document.getElementById('uin').value=fin.trim();
+        send();
+      }
+    },600);
+  };
+  try{ rec.start(); }catch(e){ stopVoice(); }
+}
+function stopVoice(){
+  if(rec){ try{ rec.stop(); }catch(e){} rec=null; }
+  document.getElementById('vm').classList.remove('on');
+  document.getElementById('vbtn').classList.remove('rec');
+}
+
+// ═══════════════════════════════════════════
+// COPY & READ ALOUD
+// ═══════════════════════════════════════════
+function cpMsg(btn, b64){
+  let txt='';
+  try{ txt=decodeURIComponent(escape(atob(b64))); }catch(e){ txt=atob(b64); }
+  navigator.clipboard.writeText(txt).then(()=>{
+    const o=btn.innerHTML; btn.innerHTML='✓ Copied!';
+    setTimeout(()=>btn.innerHTML=o, 1600);
+  }).catch(()=>showToast('Copy failed. Select text manually.'));
+}
+function spk(b64){
+  if(!window.speechSynthesis){ showToast('Text-to-speech not supported.'); return; }
+  let txt='';
+  try{ txt=decodeURIComponent(escape(atob(b64))); }catch(e){ txt=atob(b64); }
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(txt);
+  u.lang=/[\u0600-\u06FF]/.test(txt)?'ur-PK':'en-US';
+  u.rate=0.88; u.pitch=1;
+  window.speechSynthesis.speak(u);
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+window.addEventListener('load',()=>{
+  rlist(); showWlc();
+  document.getElementById('uin').focus();
+});
+window.addEventListener('resize',()=>{
+  if(window.innerWidth>768){
+    document.getElementById('mov').classList.remove('sh');
+    document.getElementById('sb').classList.remove('mop');
+  }
+});
+</script>
+</body>
+</html>
